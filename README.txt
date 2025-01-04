@@ -9,17 +9,19 @@ Player states:
 - Cutscene
 
 Match states:
+- Idling
 - Starting
 - Actions
 - Checks
 - End
 
 // Pre Match
+- Idling
 - Cutscene
 - Choose rules
+- Starting
 
 // Match Loop Order \\
-- Starting
 - Deciding
 - Checks
 - Actions
