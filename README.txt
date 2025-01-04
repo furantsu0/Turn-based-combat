@@ -24,7 +24,7 @@ Match states:
 - Checks
 - Actions
 - Checks
-- End (If end condition)
+- End (Checks for wins, if not then repeat everything above)
 - Idle
 
-Checks account for various end conditions such as eliminations, status effects, etc.
+Checks account for various conditions such as eliminations, status effects, etc.
