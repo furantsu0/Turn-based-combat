@@ -18,7 +18,6 @@ Match states:
 // Pre Match
 - Idling
 - Cutscene
-- Choose rules
 - Starting
 
 // Match Loop Order \\

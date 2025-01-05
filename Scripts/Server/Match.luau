@@ -1,10 +1,12 @@
 local Match = {
     Teams = {
-        ["Team1"] = {};
-        ["Team2"] = {};
+        ["Team1"] = nil;
+        ["Team2"] = nil;
     };
     State = "Idling";
-    Rule = nil;
+    LoopStart = false;
+    LoopCoroutine = nil;
+    --Rule = nil;
 
 }
 Match.__index = Match
@@ -16,9 +18,9 @@ end
 
 function Match:Start()
     --Send cutscene instructions to client
-    --Prompt rule select
-    --Wait until all players selected (With timer)
     self.State = "Starting"
+    self.CanLoop = true
+    self:StartLoop()
     --Loop start
     --Prompt decisions with timer
     --If timer runs out, the player will automatically make a move
@@ -29,16 +31,53 @@ function Match:Start()
     --Loop end
 end
 
-function Match:PromptChecks()
+function Match:StartLoop()
+    if not self.LoopStart then
+        return
+    end
+
+    self.LoopStart = false
+
+    self.LoopCoroutine = coroutine.create(function()
+        self:PromptDecisions()
+        coroutine.yield()
+        self:Checks()
+        coroutine.yield()
+        self:CarryOutActions()
+        coroutine.yield()
+        self:Checks(true)
+    end)
+end
+
+function Match:PromptDecisions()
     
+
+    task.wait(15)
+    coroutine.resume(self.LoopCoroutine)
 end
 
 function Match:CarryOutActions()
     
 end
 
-function Match:Checks()
-    
+function Match:CarryOutStatusEffectsAndEliminations(SecondCheck:boolean)
+    if SecondCheck then
+        --Do status effects
+    end
+    --Do eliminations
+end
+
+function Match:Checks(SecondCheck:boolean)
+    self:CarryOutStatusEffectsAndEliminations(SecondCheck)
+    --If win condition then (Checks for whole team dead state and player(s) leaving)
+    --Prompt win text
+    self:CleanUp()
+    self.LoopCoroutine = nil
+    --return
+    --else
+    self.LoopCoroutine = nil
+    self.CanLoop = true
+    self:StartLoop()
 end
 
 function Match:AddPlayer()
@@ -50,10 +89,12 @@ function Match:RemovePlayer()
 end
 
 function Match:CleanUp(Delete:boolean)
-    table.clear(self.Teams.Team1)
-    table.clear(self.Teams.Team2)
+    self.Teams.Team1 = nil
+    self.Teams.Team2 = nil
+    --table.clear(self.Teams.Team1)
+   -- table.clear(self.Teams.Team2)
     self.State = "End"
-    self.Rule = nil;
+    --self.Rule = nil;
     
     if Delete then
         setmetatable(self,nil)
